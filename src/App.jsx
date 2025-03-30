@@ -9,6 +9,7 @@ import Profile from "./components/pages/Profile";
 import Books from "./components/pages/Books";
 import Navbar from "./components/partials/Navbar";
 import BookDetail from "./components/pages/BookDetail";
+import ReadingLists from "./components/pages/ReadingLists";
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/books" element={<Books />} />
         <Route path="/books/:id" element={<BookDetail />} />
+        <Route path="/reading-lists" element={<ReadingLists />} />
         <Route path="*" element={<div className="text-center py-10 text-white">404 - Page Not Found</div>} />
       </Routes>
       
