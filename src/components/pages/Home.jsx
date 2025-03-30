@@ -1,6 +1,7 @@
+// src/components/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../utils/api";
 import Toast from "../../utils/Toast";
 
 const BASE_URL = "http://127.0.0.1:8000";
@@ -18,7 +19,7 @@ const Home = () => {
   const fetchAllBooks = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}/api/all-books/`);
+      const res = await api.get("/all-books/");
       setBooks(res.data);
     } catch (err) {
       Toast("error", "Failed to load books.");
@@ -158,6 +159,28 @@ const Home = () => {
                     <p className="text-sm text-gray-600 mb-2 truncate">
                       by {book.authors}
                     </p>
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        {book.genre}
+                      </span>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-3 w-3 mr-1" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                          />
+                        </svg>
+                        {book.created_by}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -165,6 +188,15 @@ const Home = () => {
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <p className="text-center text-gray-500 text-sm">
+            &copy; {new Date().getFullYear()} BookBounty. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
