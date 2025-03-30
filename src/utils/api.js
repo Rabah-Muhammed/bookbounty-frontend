@@ -1,8 +1,12 @@
 // src/utils/api.js
 import axios from "axios";
 
-const isDevelopment = import.meta.env.MODE === 'development'
-const myBaseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_DEPLOY
+const isDevelopment = import.meta.env.MODE === "development";
+const myBaseUrl = isDevelopment
+  ? import.meta.env.VITE_API_BASE_URL_LOCAL  // "http://localhost:8000/api"
+  : import.meta.env.VITE_API_BASE_URL_DEPLOY; // "https://bookbounty-backend.onrender.com/api"
+
+console.log("API Base URL:", myBaseUrl); // Debugging - check if the correct URL is used
 
 const api = axios.create({
   baseURL: myBaseUrl, 
@@ -17,9 +21,8 @@ api.interceptors.request.use(
     const token = localStorage.getItem("access_token");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
-     
     } else {
-      console.log("No access token found in localStorage");
+      console.warn("No access token found in localStorage");
     }
     return config;
   },
@@ -30,6 +33,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
@@ -38,22 +42,27 @@ api.interceptors.response.use(
 
         console.log("Attempting token refresh...");
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/token/refresh/", // Hardcoded for consistency
+          `${myBaseUrl}/token/refresh/`, 
           { refresh: refreshToken },
           { headers: { "Content-Type": "application/json" } }
         );
+
         const newAccessToken = response.data.access;
         localStorage.setItem("access_token", newAccessToken);
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
+
+        return api(originalRequest); // Retry the original request
       } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError);
 
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        window.location.href = "/login";
+        window.location.href = "/login"; // Redirect to login page
+
         return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
   }
 );
