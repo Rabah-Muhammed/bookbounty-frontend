@@ -19,6 +19,8 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(MEDIA_BASE_URL);
+    
     fetchProfile();
   }, []);
 
