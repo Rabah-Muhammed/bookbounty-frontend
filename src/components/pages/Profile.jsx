@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Toast from "../../utils/Toast";
+import { MEDIA_BASE_URL } from "../../utils/api";
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -137,7 +138,7 @@ const Profile = () => {
                         />
                       ) : profile.avatar ? (
                         <img
-                          src={`http://127.0.0.1:8000${profile.avatar}`}
+                          src={`${MEDIA_BASE_URL}${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />

@@ -6,8 +6,12 @@ const myBaseUrl = isDevelopment
   ? import.meta.env.VITE_API_BASE_URL_LOCAL  // "http://localhost:8000/api"
   : import.meta.env.VITE_API_BASE_URL_DEPLOY; // "https://bookbounty-backend.onrender.com/api"
 
+// Media base URL for images, PDFs, avatars
+export const MEDIA_BASE_URL = isDevelopment
+  ? import.meta.env.VITE_MEDIA_BASE_URL_LOCAL  // "http://localhost:8000"
+  : import.meta.env.VITE_MEDIA_BASE_URL_DEPLOY; // "https://bookbounty-media-files.s3.amazonaws.com"
 
-
+  
 const api = axios.create({
   baseURL: myBaseUrl, 
   headers: {
