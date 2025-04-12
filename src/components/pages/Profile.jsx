@@ -65,9 +65,9 @@ const Profile = () => {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("phone", profile.phone || "");
-    formData.append("bio", profile.bio || "");
-    formData.append("favorite_genre", profile.favorite_genre || "");
+    formData.append("phone", profile.phone);
+    formData.append("bio", profile.bio);
+    formData.append("favorite_genre", profile.favorite_genre);
     if (avatarFile) {
       formData.append("avatar", avatarFile);
     }
@@ -82,8 +82,7 @@ const Profile = () => {
       setIsEditing(false);
       Toast("success", "Profile updated successfully");
     } catch (err) {
-      console.error("Profile update error:", err);
-      Toast("error", err.response?.data?.detail || "Update failed");
+      Toast("error", "Update failed");
     } finally {
       setIsLoading(false);
     }
@@ -141,14 +140,11 @@ const Profile = () => {
                           src={`${MEDIA_BASE_URL}${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/150?text=No+Avatar";
-                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                           <span className="text-4xl font-medium text-gray-400">
-                            {profile.username ? profile.username.charAt(0).toUpperCase() : ""}
+                            {profile.username.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
@@ -307,14 +303,11 @@ const Profile = () => {
                           src={`${MEDIA_BASE_URL}${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/150?text=No+Avatar";
-                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                           <span className="text-3xl font-medium text-gray-400">
-                            {profile.username ? profile.username.charAt(0).toUpperCase() : ""}
+                            {profile.username.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
