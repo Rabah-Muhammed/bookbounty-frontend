@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/api";
+import api, { MEDIA_BASE_URL } from "../../utils/api";
 import Toast from "../../utils/Toast";
-import { MEDIA_BASE_URL } from "../../utils/api";
 
 const Profile = () => {
   const [profile, setProfile] = useState({
