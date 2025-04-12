@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { MEDIA_BASE_URL } from "../../utils/api";
+import api from "../../utils/api";
 import Toast from "../../utils/Toast";
 
 const Profile = () => {
@@ -19,8 +19,6 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(MEDIA_BASE_URL);
-    
     fetchProfile();
   }, []);
 
@@ -139,7 +137,7 @@ const Profile = () => {
                         />
                       ) : profile.avatar ? (
                         <img
-                          src={`${MEDIA_BASE_URL}${profile.avatar}`}
+                          src={`http://127.0.0.1:8000${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -302,7 +300,7 @@ const Profile = () => {
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
                       {profile.avatar ? (
                         <img
-                          src={`${MEDIA_BASE_URL}${profile.avatar}`}
+                          src={`http://127.0.0.1:8000${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
