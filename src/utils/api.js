@@ -1,4 +1,3 @@
-// src/utils/api.js
 import axios from "axios";
 
 const isDevelopment = import.meta.env.MODE === "development";
@@ -9,11 +8,21 @@ const myBaseUrl = isDevelopment
 // Media base URL for images, PDFs, avatars
 export const MEDIA_BASE_URL = isDevelopment
   ? import.meta.env.VITE_MEDIA_BASE_URL_LOCAL  // "http://localhost:8000"
-  : import.meta.env.VITE_MEDIA_BASE_URL_DEPLOY; // "https://bookbounty-media-files.s3.amazonaws.com"
+  : import.meta.env.VITE_MEDIA_BASE_URL_DEPLOY; // "https://book-bounty.s3.eu-north-1.amazonaws.com"
 
-  
+// Utility to normalize media URLs
+export const normalizeMediaUrl = (path) => {
+  if (!path) return null;
+  // If path is already a full URL, return it as-is
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+  // Otherwise, prepend MEDIA_BASE_URL and ensure no double slashes
+  return `${MEDIA_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`.replace(/([^:]\/)\/+/g, "$1");
+};
+
 const api = axios.create({
-  baseURL: myBaseUrl, 
+  baseURL: myBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
@@ -46,7 +55,7 @@ api.interceptors.response.use(
 
         console.log("Attempting token refresh...");
         const response = await axios.post(
-          `${myBaseUrl}/token/refresh/`, 
+          `${myBaseUrl}/token/refresh/`,
           { refresh: refreshToken },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -55,14 +64,12 @@ api.interceptors.response.use(
         localStorage.setItem("access_token", newAccessToken);
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
-        return api(originalRequest); // Retry the original request
+        return api(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        window.location.href = "/login"; // Redirect to login page
-
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
