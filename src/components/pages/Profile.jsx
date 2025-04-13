@@ -88,6 +88,10 @@ const Profile = () => {
     }
   };
 
+  const avatarUrl = profile.avatar
+    ? `${import.meta.env.VITE_MEDIA_BASE_URL_DEPLOY}${profile.avatar}`
+    : null;
+
   if (isLoading && !isEditing) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
@@ -135,9 +139,9 @@ const Profile = () => {
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
-                      ) : profile.avatar ? (
+                      ) : avatarUrl ? (
                         <img
-                          src={`${import.meta.env.VITE_MEDIA_BASE_URL_DEPLOY}${profile.avatar}`}
+                          src={avatarUrl}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -298,9 +302,9 @@ const Profile = () => {
                 <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
                   <div className="relative">
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
-                      {profile.avatar ? (
+                      {avatarUrl ? (
                         <img
-                          src={`${import.meta.env.VITE_MEDIA_BASE_URL_DEPLOY}${profile.avatar}`}
+                          src={avatarUrl}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -317,21 +321,29 @@ const Profile = () => {
                     <h2 className="text-2xl font-bold text-gray-900">
                       {profile.username}
                     </h2>
-                    <p className="text-gray-500">{profile.email}</p>
-                    <p className="text-gray-600 mt-2">{profile.bio}</p>
+                    <p className="text-gray-600">{profile.email}</p>
+                    <p className="mt-2 text-gray-500 text-sm">
+                      Member since {new Date(profile.date_joined).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Profile Information */}
-              <div className="px-6 py-8 space-y-6">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500">Phone</span>
-                  <span className="text-sm text-gray-900">{profile.phone}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500">Favorite Genre</span>
-                  <span className="text-sm text-gray-900">{profile.favorite_genre}</span>
+              {/* Profile Details */}
+              <div className="px-6 py-8 space-y-8">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div>
+                    <strong className="text-gray-700">Phone</strong>
+                    <p className="text-gray-500">{profile.phone || "Not provided"}</p>
+                  </div>
+                  <div>
+                    <strong className="text-gray-700">Favorite Genre</strong>
+                    <p className="text-gray-500">{profile.favorite_genre || "Not provided"}</p>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <strong className="text-gray-700">Bio</strong>
+                    <p className="text-gray-500">{profile.bio || "Not provided"}</p>
+                  </div>
                 </div>
               </div>
             </div>
