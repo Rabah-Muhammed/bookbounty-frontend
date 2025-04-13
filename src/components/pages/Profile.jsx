@@ -137,7 +137,13 @@ const Profile = () => {
                         />
                       ) : profile.avatar ? (
                         <img
-                          src={`${profile.avatar}`}
+                          src={
+                            profile.avatar
+                              ? window.location.hostname === "localhost"
+                                ? `${MEDIA_BASE_URL}${profile.avatar}`
+                                : profile.avatar
+                              : ""
+                          }
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -300,7 +306,13 @@ const Profile = () => {
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
                       {profile.avatar ? (
                         <img
-                          src={`${profile.avatar}`}
+                          src={
+                            profile.avatar
+                              ? window.location.hostname === "localhost"
+                                ? `${MEDIA_BASE_URL}${profile.avatar}`
+                                : profile.avatar
+                              : ""
+                          }                        
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
