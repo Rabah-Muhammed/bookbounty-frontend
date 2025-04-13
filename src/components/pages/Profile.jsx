@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Toast from "../../utils/Toast";
-import { MEDIA_BASE_URL } from "../../utils/api"; // Import the media base URL
+import { MEDIA_BASE_URL } from "../../utils/api";
+
+// Fallback Avatar Component
+const FallbackAvatar = ({ username, size = '4xl', className = "" }) => (
+  <div className={`w-full h-full bg-gray-100 flex items-center justify-center rounded-full ${className}`}>
+    <span className={`text-${size} font-medium text-gray-400`}>
+      {username?.charAt(0).toUpperCase() || '?'}
+    </span>
+  </div>
+);
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -12,6 +21,7 @@ const Profile = () => {
     bio: "",
     avatar: null,
     favorite_genre: "",
+    created_at: new Date().toISOString()
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,13 +67,12 @@ const Profile = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type and size
       const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!validTypes.includes(file.type)) {
         Toast("error", "Only JPG, PNG or GIF images are allowed");
         return;
       }
-      if (file.size > 2 * 1024 * 1024) { // 2MB
+      if (file.size > 2 * 1024 * 1024) {
         Toast("error", "Image must be less than 2MB");
         return;
       }
@@ -100,11 +109,15 @@ const Profile = () => {
     }
   };
 
-  // Helper function to get avatar URL
   const getAvatarUrl = (avatarPath) => {
     if (!avatarPath) return null;
     if (avatarPath.startsWith('http')) return avatarPath;
     return `${MEDIA_BASE_URL}${avatarPath}`;
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   if (isLoading && !isEditing) {
@@ -161,15 +174,13 @@ const Profile = () => {
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "https://via.placeholder.com/150?text=No+Avatar";
+                            e.target.replaceWith(
+                              <FallbackAvatar username={profile.username} size="4xl" />
+                            );
                           }}
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                          <span className="text-4xl font-medium text-gray-400">
-                            {profile.username.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
+                        <FallbackAvatar username={profile.username} size="4xl" />
                       )}
                     </div>
                     <label className="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer hover:bg-gray-800 transition">
@@ -328,15 +339,13 @@ const Profile = () => {
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "https://via.placeholder.com/150?text=No+Avatar";
+                            e.target.replaceWith(
+                              <FallbackAvatar username={profile.username} size="3xl" />
+                            );
                           }}
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                          <span className="text-3xl font-medium text-gray-400">
-                            {profile.username.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
+                        <FallbackAvatar username={profile.username} size="3xl" />
                       )}
                     </div>
                   </div>
@@ -346,7 +355,7 @@ const Profile = () => {
                     </h2>
                     <p className="text-gray-600">{profile.email}</p>
                     <p className="mt-2 text-gray-500 text-sm">
-                      Member since {new Date().toLocaleDateString()}
+                      Member since {formatDate(profile.created_at)}
                     </p>
                   </div>
                 </div>
