@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../../utils/api";
+import api, { MEDIA_BASE_URL } from "../../utils/api";
 import Toast from "../../utils/Toast";
 import Swal from "sweetalert2";
 
-const BASE_URL = "http://127.0.0.1:8000";
+
 
 const Books = () => {
   const [books, setBooks] = useState([]);
@@ -468,7 +468,11 @@ const Books = () => {
                     <div className="w-32 h-48 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
                       {book.cover_image ? (
                         <img
-                          src={`${BASE_URL}${book.cover_image}`}
+                          src={
+                            window.location.hostname === "localhost"
+                              ? `${MEDIA_BASE_URL}${book.cover_image}`
+                              : book.cover_image
+                          }
                           alt={`${book.title} cover`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
