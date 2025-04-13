@@ -137,7 +137,7 @@ const Profile = () => {
                         />
                       ) : profile.avatar ? (
                         <img
-                          src={`https://book-bounty.s3.eu-north-1.amazonaws.com${profile.avatar.startsWith('/') ? profile.avatar : '/' + profile.avatar}`}
+                          src={`http://127.0.0.1:8000${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -300,7 +300,7 @@ const Profile = () => {
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
                       {profile.avatar ? (
                         <img
-                          src={`https://book-bounty.s3.eu-north-1.amazonaws.com${profile.avatar.startsWith('/') ? profile.avatar : '/' + profile.avatar}`}
+                          src={`http://127.0.0.1:8000${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -313,27 +313,51 @@ const Profile = () => {
                       )}
                     </div>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900">{profile.username}</h2>
-                    <p className="text-sm text-gray-600">{profile.email}</p>
+                  <div className="text-center sm:text-left">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      {profile.username}
+                    </h2>
+                    <p className="text-gray-600">{profile.email}</p>
+                    <p className="mt-2 text-gray-500 text-sm">
+                      Member since {new Date().toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Profile Details */}
-              <div className="px-6 py-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="px-6 py-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+                <div className="space-y-6">
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Phone Number</p>
-                    <p className="text-gray-600">{profile.phone || "Not provided"}</p>
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Personal Information
+                    </h3>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Phone</p>
+                        <p className="mt-1 text-gray-900">
+                          {profile.phone || "Not provided"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Favorite Genre
+                        </p>
+                        <p className="mt-1 text-gray-900">
+                          {profile.favorite_genre || "Not specified"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Favorite Genre</p>
-                    <p className="text-gray-600">{profile.favorite_genre || "Not provided"}</p>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <p className="text-sm font-medium text-gray-700">Bio</p>
-                    <p className="text-gray-600">{profile.bio || "Not provided"}</p>
+                </div>
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    About
+                  </h3>
+                  <div className="mt-4">
+                    <p className="text-gray-900 whitespace-pre-line">
+                      {profile.bio || "No bio provided"}
+                    </p>
                   </div>
                 </div>
               </div>
