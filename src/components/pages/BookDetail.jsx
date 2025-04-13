@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../../utils/api";
+import api, { MEDIA_BASE_URL } from "../../utils/api";
 import Toast from "../../utils/Toast";
 import { FiArrowLeft, FiBookmark, FiPlus } from "react-icons/fi";
 import { motion } from "framer-motion";
-
-const BASE_URL = "http://127.0.0.1:8000";
 
 const BookDetail = () => {
   const [book, setBook] = useState(null);
@@ -108,7 +106,11 @@ const BookDetail = () => {
             <div className="lg:w-1/3 p-6 lg:p-8 flex justify-center bg-gray-50">
               {book.cover_image ? (
                 <motion.img
-                  src={`${BASE_URL}${book.cover_image}`}
+                  src={
+                    window.location.hostname === "localhost"
+                      ? `${MEDIA_BASE_URL}${book.cover_image}`
+                      : book.cover_image
+                  }
                   alt={`${book.title} cover`}
                   className="w-full max-w-xs h-auto object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
                   whileHover={{ scale: 1.02 }}
