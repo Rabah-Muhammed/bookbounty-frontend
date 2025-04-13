@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Toast from "../../utils/Toast";
+import { MEDIA_BASE_URL } from "../../utils/api"; // Import the media base URL
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -56,6 +57,16 @@ const Profile = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type and size
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        Toast("error", "Only JPG, PNG or GIF images are allowed");
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) { // 2MB
+        Toast("error", "Image must be less than 2MB");
+        return;
+      }
       setAvatarFile(file);
     }
   };
@@ -83,9 +94,17 @@ const Profile = () => {
       Toast("success", "Profile updated successfully");
     } catch (err) {
       Toast("error", "Update failed");
+      console.error("Profile update error:", err.response?.data || err.message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Helper function to get avatar URL
+  const getAvatarUrl = (avatarPath) => {
+    if (!avatarPath) return null;
+    if (avatarPath.startsWith('http')) return avatarPath;
+    return `${MEDIA_BASE_URL}${avatarPath}`;
   };
 
   if (isLoading && !isEditing) {
@@ -137,9 +156,13 @@ const Profile = () => {
                         />
                       ) : profile.avatar ? (
                         <img
-                          src={`http://127.0.0.1:8000${profile.avatar}`}
+                          src={getAvatarUrl(profile.avatar)}
                           alt="Profile"
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/150?text=No+Avatar";
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -300,9 +323,13 @@ const Profile = () => {
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
                       {profile.avatar ? (
                         <img
-                          src={`http://127.0.0.1:8000${profile.avatar}`}
+                          src={getAvatarUrl(profile.avatar)}
                           alt="Profile"
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/150?text=No+Avatar";
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
