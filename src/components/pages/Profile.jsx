@@ -141,7 +141,7 @@ const Profile = () => {
                             profile.avatar
                               ? window.location.hostname === "localhost"
                                 ? `${MEDIA_BASE_URL}${profile.avatar}`
-                                : profile.avatar
+                                : `${profile.avatar}`
                               : ""
                           }
                           alt="Profile"
@@ -310,7 +310,7 @@ const Profile = () => {
                             profile.avatar
                               ? window.location.hostname === "localhost"
                                 ? `${MEDIA_BASE_URL}${profile.avatar}`
-                                : profile.avatar
+                                : `${profile.avatar}`
                               : ""
                           }                        
                           alt="Profile"
