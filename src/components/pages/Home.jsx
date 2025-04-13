@@ -1,10 +1,8 @@
 // src/components/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/api";
+import api, { MEDIA_BASE_URL } from "../../utils/api";
 import Toast from "../../utils/Toast";
-
-const BASE_URL = "http://127.0.0.1:8000";
 
 const Home = () => {
   const [books, setBooks] = useState([]);
@@ -126,7 +124,11 @@ const Home = () => {
                   <div className="relative pb-2/3 h-48">
                     {book.cover_image ? (
                       <img
-                        src={`${BASE_URL}${book.cover_image}`}
+                        src={
+                          window.location.hostname === "localhost"
+                            ? `${MEDIA_BASE_URL}${book.cover_image}`
+                            : book.cover_image
+                        }
                         alt={`${book.title} cover`}
                         className="absolute h-full w-full object-cover"
                         onError={(e) => {
@@ -201,4 +203,4 @@ const Home = () => {
   );
 };
 
-export default Home;  
+export default Home;
