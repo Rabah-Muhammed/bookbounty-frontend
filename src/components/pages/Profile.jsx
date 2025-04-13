@@ -137,7 +137,7 @@ const Profile = () => {
                         />
                       ) : profile.avatar ? (
                         <img
-                          src={profile.avatar?.startsWith("http") ? profile.avatar : `${MEDIA_BASE_URL}${profile.avatar}`}
+                          src={`${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -300,7 +300,7 @@ const Profile = () => {
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
                       {profile.avatar ? (
                         <img
-                          src={profile.avatar?.startsWith("http") ? profile.avatar : `${MEDIA_BASE_URL}${profile.avatar}`}
+                          src={`${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -324,6 +324,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
+              
 
               {/* Profile Details */}
               <div className="px-6 py-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
