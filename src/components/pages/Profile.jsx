@@ -4,15 +4,6 @@ import api from "../../utils/api";
 import Toast from "../../utils/Toast";
 import { MEDIA_BASE_URL } from "../../utils/api";
 
-// Fallback Avatar Component
-const FallbackAvatar = ({ username, size = '4xl', className = "" }) => (
-  <div className={`w-full h-full bg-gray-100 flex items-center justify-center rounded-full ${className}`}>
-    <span className={`text-${size} font-medium text-gray-400`}>
-      {username?.charAt(0).toUpperCase() || '?'}
-    </span>
-  </div>
-);
-
 const Profile = () => {
   const [profile, setProfile] = useState({
     username: "",
@@ -27,6 +18,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [avatarError, setAvatarError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +40,7 @@ const Profile = () => {
     try {
       const res = await api.get("/profile/");
       setProfile(res.data);
+      setAvatarError(false);
     } catch (err) {
       console.error("Profile fetch error:", err);
       if (err.response?.status === 401) {
@@ -99,6 +92,7 @@ const Profile = () => {
       setProfile(res.data);
       setAvatarFile(null);
       setAvatarPreview("");
+      setAvatarError(false);
       setIsEditing(false);
       Toast("success", "Profile updated successfully");
     } catch (err) {
@@ -109,11 +103,13 @@ const Profile = () => {
     }
   };
 
-  const getAvatarUrl = (avatarPath) => {
-    if (!avatarPath) return null;
-    if (avatarPath.startsWith('http')) return avatarPath;
-    return `${MEDIA_BASE_URL}${avatarPath}`;
-  };
+  const renderFallbackAvatar = (size = '4xl') => (
+    <div className={`w-full h-full bg-gray-100 flex items-center justify-center rounded-full`}>
+      <span className={`text-${size} font-medium text-gray-400`}>
+        {profile.username?.charAt(0).toUpperCase() || '?'}
+      </span>
+    </div>
+  );
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -134,7 +130,6 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Profile Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Profile</h1>
@@ -152,12 +147,10 @@ const Profile = () => {
           )}
         </div>
 
-        {/* Profile Content */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
           {isEditing ? (
             <form onSubmit={handleSubmit} className="divide-y divide-gray-100">
               <div className="px-6 py-8 space-y-8">
-                {/* Avatar Section */}
                 <div className="flex flex-col items-center space-y-4">
                   <div className="relative group">
                     <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
@@ -167,20 +160,15 @@ const Profile = () => {
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
-                      ) : profile.avatar ? (
+                      ) : profile.avatar && !avatarError ? (
                         <img
-                          src={getAvatarUrl(profile.avatar)}
+                          src={`${MEDIA_BASE_URL}${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.replaceWith(
-                              <FallbackAvatar username={profile.username} size="4xl" />
-                            );
-                          }}
+                          onError={() => setAvatarError(true)}
                         />
                       ) : (
-                        <FallbackAvatar username={profile.username} size="4xl" />
+                        renderFallbackAvatar()
                       )}
                     </div>
                     <label className="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer hover:bg-gray-800 transition">
@@ -209,7 +197,6 @@ const Profile = () => {
                   </p>
                 </div>
 
-                {/* Form Fields */}
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -275,7 +262,6 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Form Actions */}
               <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
                 <button
                   type="button"
@@ -283,6 +269,7 @@ const Profile = () => {
                     setIsEditing(false);
                     setAvatarFile(null);
                     setAvatarPreview("");
+                    setAvatarError(false);
                   }}
                   className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-300"
                 >
@@ -327,25 +314,19 @@ const Profile = () => {
             </form>
           ) : (
             <div className="divide-y divide-gray-100">
-              {/* Profile Header */}
               <div className="px-6 py-8">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
                   <div className="relative">
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
-                      {profile.avatar ? (
+                      {profile.avatar && !avatarError ? (
                         <img
-                          src={getAvatarUrl(profile.avatar)}
+                          src={`${MEDIA_BASE_URL}${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.replaceWith(
-                              <FallbackAvatar username={profile.username} size="3xl" />
-                            );
-                          }}
+                          onError={() => setAvatarError(true)}
                         />
                       ) : (
-                        <FallbackAvatar username={profile.username} size="3xl" />
+                        renderFallbackAvatar('3xl')
                       )}
                     </div>
                   </div>
@@ -361,7 +342,6 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Profile Details */}
               <div className="px-6 py-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
                 <div className="space-y-6">
                   <div>
