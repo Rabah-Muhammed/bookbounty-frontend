@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Toast from "../../utils/Toast";
-import { MEDIA_BASE_URL } from "../../utils/api";
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -12,13 +11,11 @@ const Profile = () => {
     bio: "",
     avatar: null,
     favorite_genre: "",
-    created_at: new Date().toISOString()
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState("");
-  const [avatarError, setAvatarError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +37,6 @@ const Profile = () => {
     try {
       const res = await api.get("/profile/");
       setProfile(res.data);
-      setAvatarError(false);
     } catch (err) {
       console.error("Profile fetch error:", err);
       if (err.response?.status === 401) {
@@ -60,15 +56,6 @@ const Profile = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      if (!validTypes.includes(file.type)) {
-        Toast("error", "Only JPG, PNG or GIF images are allowed");
-        return;
-      }
-      if (file.size > 2 * 1024 * 1024) {
-        Toast("error", "Image must be less than 2MB");
-        return;
-      }
       setAvatarFile(file);
     }
   };
@@ -92,28 +79,13 @@ const Profile = () => {
       setProfile(res.data);
       setAvatarFile(null);
       setAvatarPreview("");
-      setAvatarError(false);
       setIsEditing(false);
       Toast("success", "Profile updated successfully");
     } catch (err) {
       Toast("error", "Update failed");
-      console.error("Profile update error:", err.response?.data || err.message);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const renderFallbackAvatar = (size = '4xl') => (
-    <div className={`w-full h-full bg-gray-100 flex items-center justify-center rounded-full`}>
-      <span className={`text-${size} font-medium text-gray-400`}>
-        {profile.username?.charAt(0).toUpperCase() || '?'}
-      </span>
-    </div>
-  );
-
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   if (isLoading && !isEditing) {
@@ -130,6 +102,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Profile Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Profile</h1>
@@ -147,10 +120,12 @@ const Profile = () => {
           )}
         </div>
 
+        {/* Profile Content */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
           {isEditing ? (
             <form onSubmit={handleSubmit} className="divide-y divide-gray-100">
               <div className="px-6 py-8 space-y-8">
+                {/* Avatar Section */}
                 <div className="flex flex-col items-center space-y-4">
                   <div className="relative group">
                     <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
@@ -160,15 +135,18 @@ const Profile = () => {
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
-                      ) : profile.avatar && !avatarError ? (
+                      ) : profile.avatar ? (
                         <img
-                          src={`${MEDIA_BASE_URL}${profile.avatar}`}
+                          src={`http://127.0.0.1:8000${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
-                          onError={() => setAvatarError(true)}
                         />
                       ) : (
-                        renderFallbackAvatar()
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                          <span className="text-4xl font-medium text-gray-400">
+                            {profile.username.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
                       )}
                     </div>
                     <label className="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer hover:bg-gray-800 transition">
@@ -197,6 +175,7 @@ const Profile = () => {
                   </p>
                 </div>
 
+                {/* Form Fields */}
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -262,6 +241,7 @@ const Profile = () => {
                 </div>
               </div>
 
+              {/* Form Actions */}
               <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
                 <button
                   type="button"
@@ -269,7 +249,6 @@ const Profile = () => {
                     setIsEditing(false);
                     setAvatarFile(null);
                     setAvatarPreview("");
-                    setAvatarError(false);
                   }}
                   className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-300"
                 >
@@ -314,19 +293,23 @@ const Profile = () => {
             </form>
           ) : (
             <div className="divide-y divide-gray-100">
+              {/* Profile Header */}
               <div className="px-6 py-8">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
                   <div className="relative">
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 shadow-inner">
-                      {profile.avatar && !avatarError ? (
+                      {profile.avatar ? (
                         <img
-                          src={`${MEDIA_BASE_URL}${profile.avatar}`}
+                          src={`http://127.0.0.1:8000${profile.avatar}`}
                           alt="Profile"
                           className="w-full h-full object-cover"
-                          onError={() => setAvatarError(true)}
                         />
                       ) : (
-                        renderFallbackAvatar('3xl')
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                          <span className="text-3xl font-medium text-gray-400">
+                            {profile.username.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -336,12 +319,13 @@ const Profile = () => {
                     </h2>
                     <p className="text-gray-600">{profile.email}</p>
                     <p className="mt-2 text-gray-500 text-sm">
-                      Member since {formatDate(profile.created_at)}
+                      Member since {new Date().toLocaleDateString()}
                     </p>
                   </div>
                 </div>
               </div>
 
+              {/* Profile Details */}
               <div className="px-6 py-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
                 <div className="space-y-6">
                   <div>
